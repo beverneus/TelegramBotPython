@@ -43,7 +43,7 @@ def loop(update, context):
         timedate = time.strftime('[%H:%M/%d.%m.%Y]')
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=f"{timedate} : {price}")
-        time.sleep(DELAY)
+        time.sleep(DELAY*60*60)
 
 
 # Define command handelers and add them to dispatcher
