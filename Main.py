@@ -33,13 +33,19 @@ def getBitcoinPrice():
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
+<<<<<<< HEAD
                              text="Thank you for purchasing my bot, t"
                              "ype '/loop' to start or \n/price for the current"
                              " price")
+=======
+                             text="Thank you for purchasing my bot,"
+                             " type '/price' to start")
+>>>>>>> 30242412706f06c2a2c8449632c8571241be3aaf
 
 # Sends price every DELAY seconds
 
 
+<<<<<<< HEAD
 def bPrice(context: CallbackContext):
     price = round(getBitcoinPrice(), 2)
     timedate = time.strftime('[%H:%M/%d.%m.%Y]')
@@ -85,6 +91,15 @@ def price(update, context):
     timedate = time.strftime('[%H:%M/%d.%m.%Y]')
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"{timedate} : ${price}")
+=======
+def loop(update, context):
+    while True:
+        price = round(get_latest_bitcoin_price(), 2)
+        timedate = time.strftime('[%H:%M/%d.%m.%Y]')
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=f"{timedate} : {price}")
+        time.sleep(DELAY*60*60)
+>>>>>>> 30242412706f06c2a2c8449632c8571241be3aaf
 
 
 # Define command handelers and add them to dispatcher
