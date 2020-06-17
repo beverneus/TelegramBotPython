@@ -1,14 +1,16 @@
-# import all modules
 from config import BOT_TOKEN
 import logging
-from telegram.ext import CommandHandler, Updater
+import telegram
+from telegram.ext import CommandHandler, Updater, CallbackContext
 import time
 import requests
 DELAY = 6  # Hours
 # Token is located in config.py
 
+repeater = None
 updater = Updater(token=BOT_TOKEN, use_context=True)
 dispatcher = updater.dispatcher
+job_queue = updater.job_queue
 
 # Logging
 logging.basicConfig(
@@ -20,7 +22,7 @@ logging.basicConfig(
 # Imports the bitcoin price from the coincap api
 
 
-def get_latest_bitcoin_price():
+def getBitcoinPrice():
     response = requests.get('https://api.coincap.io/v2/assets/bitcoin/')
     response_json = response.json()
     # Convert the price to a floating point number
@@ -31,12 +33,65 @@ def get_latest_bitcoin_price():
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
+<<<<<<< HEAD
+                             text="Thank you for purchasing my bot, t"
+                             "ype '/loop' to start or \n/price for the current"
+                             " price")
+=======
                              text="Thank you for purchasing my bot,"
                              " type '/price' to start")
+>>>>>>> 30242412706f06c2a2c8449632c8571241be3aaf
 
 # Sends price every DELAY seconds
 
 
+<<<<<<< HEAD
+def bPrice(context: CallbackContext):
+    price = round(getBitcoinPrice(), 2)
+    timedate = time.strftime('[%H:%M/%d.%m.%Y]')
+    context.bot.send_message(chat_id=context.job.context,
+                             text=f"{timedate} : ${price}")
+
+
+# Make a new job to repeat bPrice every DELAY hours
+def repeat(update: telegram.Update, context: CallbackContext):
+    global repeater
+    try:
+        if repeater.enabled is False:
+            repeater.enabled = True
+            context.bot.send_message(chat_id=update.message.chat_id,
+                                     text='Starting Bitcoin Price Alert, '
+                                     'use /pause or /stop to pause or stop')
+        elif repeater.enabled is True:
+            context.bot.send_message(chat_id=update.message.chat_id,
+                                     text='Bitcoin Price is already running!')
+    except AttributeError:
+        print("working")
+        repeater = job_queue.run_repeating(bPrice, interval=DELAY*60*60,
+                                           first=0,
+                                           context=update.message.chat_id)
+        repeater.enabled = True
+        print("Started")
+        context.bot.send_message(chat_id=update.message.chat_id,
+                                 text='Starting Bitcoin Price Alert, '
+                                      'use /pause to pause or \n/price to get'
+                                      'the current price')
+
+
+def pause(update: telegram.Update, context):
+    repeater.enabled = False
+    context.bot.send_message(chat_id=update.message.chat_id,
+                             text='Paused Bitcoin Price, '
+                                  'use /loop to start again')
+    print("pause")
+
+
+def price(update, context):
+    price = round(getBitcoinPrice(), 2)
+    timedate = time.strftime('[%H:%M/%d.%m.%Y]')
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=f"{timedate} : ${price}")
+=======
 def loop(update, context):
     while True:
         price = round(get_latest_bitcoin_price(), 2)
@@ -44,13 +99,19 @@ def loop(update, context):
         context.bot.send_message(
             chat_id=update.effective_chat.id, text=f"{timedate} : {price}")
         time.sleep(DELAY*60*60)
+>>>>>>> 30242412706f06c2a2c8449632c8571241be3aaf
 
 
 # Define command handelers and add them to dispatcher
 start_handeler = CommandHandler("start", start)
 dispatcher.add_handler(start_handeler)
-loop_handeler = CommandHandler("price", loop)
+loop_handeler = CommandHandler("loop", repeat)
 dispatcher.add_handler(loop_handeler)
+pause_handeler = CommandHandler("pause", pause)
+dispatcher.add_handler(pause_handeler)
+price_handeler = CommandHandler("price", price)
+dispatcher.add_handler(price_handeler)
+
 
 # Start listening to commands
 updater.start_polling()
