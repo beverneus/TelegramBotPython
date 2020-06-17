@@ -33,9 +33,8 @@ def getBitcoinPrice():
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="Thank you for purchasing my bot, t"
-                             "ype '/loop' to start or \n/price for the current"
-                             " price")
+                             text="type /loop to start or /price to see the"
+                             " current Bitcoin price")
 
 # Sends price every DELAY seconds
 
