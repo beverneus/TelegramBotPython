@@ -12,7 +12,8 @@ dispatcher = updater.dispatcher
 
 # Logging
 logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - , %(message)s", level=logging.INFO)
+    format="%(asctime)s - %(name)s - %(levelname)s - , %(message)s",
+    level=logging.INFO)
 
 # Define Functions
 
@@ -30,7 +31,8 @@ def get_latest_bitcoin_price():
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="Thank you for purchasing my bot, type '/price' to start")
+                             text="Thank you for purchasing my bot,"
+                             " type '/price' to start")
 
 # Sends price every DELAY seconds
 
@@ -39,7 +41,8 @@ def loop(update, context):
     while True:
         price = round(get_latest_bitcoin_price(), 2)
         timedate = time.strftime('[%H:%M/%d.%m.%Y]')
-        context.bot.send_message(chat_id=update.effective_chat.id, text=f"{timedate} : {price}")
+        context.bot.send_message(
+            chat_id=update.effective_chat.id, text=f"{timedate} : {price}")
         time.sleep(DELAY)
 
 
