@@ -36,18 +36,9 @@ def start(update, context):
                              text="type /loop to start or /price to see the"
                              " current Bitcoin price")
 
-# Sends price every DELAY seconds
-
-
-def bPrice(context: CallbackContext):
-    price = round(getBitcoinPrice(), 2)
-    timedate = time.strftime('[%H:%M/%d.%m.%Y]')
-    context.bot.send_message(chat_id=context.job.context,
-                             text=f"{timedate} : ${price}")
-
 
 # Make a new job to repeat bPrice every DELAY hours
-def repeat(update: telegram.Update, context: CallbackContext):
+def repeat(update, context: CallbackContext):
     global repeater
     try:
         if repeater.enabled is False:
@@ -59,11 +50,9 @@ def repeat(update: telegram.Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.message.chat_id,
                                      text='Bitcoin Price is already running!')
     except AttributeError:
-        print("working")
-        repeater = job_queue.run_repeating(bPrice, interval=DELAY*60*60,
+        repeater = job_queue.run_repeating(PriceLoop, interval=DELAY*60*60,
                                            first=0,
                                            context=update.message.chat_id)
-        repeater.enabled = True
         print("Started")
         context.bot.send_message(chat_id=update.message.chat_id,
                                  text='Starting Bitcoin Price Alert, '
@@ -79,11 +68,21 @@ def pause(update: telegram.Update, context):
     print("pause")
 
 
-def price(update, context):
+def TimePrice():
     price = round(getBitcoinPrice(), 2)
     timedate = time.strftime('[%H:%M/%d.%m.%Y]')
+    return f"{timedate} : ${price}"
+# Sends price every DELAY seconds
+
+
+def PriceLoop(context):
+    context.bot.send_message(chat_id=context.job.context,
+                             text=TimePrice())
+
+
+def price(context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"{timedate} : ${price}")
+                             text=TimePrice())
 
 
 # Define command handelers and add them to dispatcher
